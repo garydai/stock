@@ -86,6 +86,7 @@ def start(url, d):
 	    browser.close()
 	    browser.quit()
     except:
+    	print 'error'
 		browser.close()
 		browser.quit()	
 

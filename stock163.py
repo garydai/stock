@@ -16,25 +16,36 @@ class getstock:
      
     def go(self, count):
         #定义网址，获取上交所创业板只需对应修改stock_num为6开头或3开头即可
-        stock_num = str(count).zfill(6)
-        url = 'http://quotes.money.163.com/f10/zycwzb_'+stock_num+',year.html'
+        stock_num = str(count).zfill(7)
+        if count > 600000:
+            stock_num = str(count).zfill(7)  
+        else:
+            stock_num = '1' + str(count).zfill(6)  
+        print stock_num
+        url = 'http://quotes.money.163.com/'+stock_num+'.html'
+        print url
         #print("股票代码:" + stock_num)
         headers = {"User-Agent":"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6"}
         req = urllib2.Request( url, headers = headers)
         try:
             content = urllib2.urlopen(req).read()
-        except:
+        except Exception,e:
+            print e
             return
         soup = BeautifulSoup(content)
-        #获取名称
+
+        c = soup.findAll('div',class_='relate_stock clearfix')
+        #print c
         name = soup.find('h1',class_='name').contents[1].contents[0].encode('utf-8')
-        #print name
+        industry = c[1].find('li')
+
+        industry_name = industry.contents[0].contents[0].encode('utf-8').strip()
+        print industry_name
+        print name
         if name != '':
             #print name
-            ws.write(stock_num)
-            ws.write('%')
-            ws.write(name)
-            ws.write('\n')
+            ws.write(str(str(count).zfill(6))+'%'+str(name)+ '%'+str(industry_name) +'\n')
+
         #获取负债率
      #   a = soup.find_all(class_='table_bg001 border_box fund_analys')
      #   for i in a:
@@ -73,8 +84,12 @@ while count <=2735:
         #wb.save('stockdebt.xls')
         count1 += 1
         count += 1
-    except:
-        continue
+    except Exception,e:
+        print e
+        count1 += 1
+        count += 1
+        
+    #break
 
 count = 300000
 while count <=300409:
@@ -84,8 +99,11 @@ while count <=300409:
         #wb.save('stockdebt.xls')
         count1 += 1
         count += 1
-    except:
-        continue
+    except Exception,e:
+        print e
+        count1 += 1
+        count += 1
+        
 
 count = 600000
 while count <=603998:
@@ -96,7 +114,10 @@ while count <=603998:
         #wb.save('stockdebt.xls')
         count1 += 1
         count += 1
-    except:
-        continue
+    except Exception,e:
+        print e
+        count1 += 1
+        count += 1
+        
 
 

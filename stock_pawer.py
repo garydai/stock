@@ -23,7 +23,7 @@ import time
 import json
  
 
-def start(url, d):
+def start(url, d, today, vstock):
    # try:
     browser = webdriver.Chrome(executable_path='F:\chromedriver_win32\chromedriver.exe')
     url = url
@@ -41,11 +41,11 @@ def start(url, d):
 	    result = result + '}]'
 	    decode = json.loads(result)
 	    
-	    f = open('stock.txt', 'r')
 
 
-	    today   = date.today()
-	    print today
+
+	    #today   = date.today()
+	    #print today
 	    startDetect = time.time()
 	    ed = int(time.mktime(datetime.strptime(datetime.strftime(today, "%Y-%m-%d"), "%Y-%m-%d").timetuple()))
 	    st = int(time.mktime(datetime.strptime(datetime.strftime(today - timedelta(days = 1), "%Y-%m-%d"), "%Y-%m-%d").timetuple()))
@@ -54,23 +54,24 @@ def start(url, d):
 	    ed = str(ed) + '000'
 	    print ed
 
-	    while 1:
-			line = f.readline()
+	    for i in range(len(vstock)):
+	    #while 1:
+		#	line = f.readline()
 
-			if not line:
-				break
+		#	if not line:
+		#		break
 			#print line
-			array = line[:-1].split('%')
+		#	array = line[:-1].split('%')
 			for item in decode:
-				print item['created_at'], st, ed
+				#print item['created_at'], st, ed
 				if str(item['created_at']) > st and str(item['created_at']) < ed:
-					if item['description'].encode('utf-8').find(array[1]) != -1:
+					if item['description'].encode('utf-8').find(vstock[i]._name) != -1:
 					#	print 2
-						print array[1], item['description'].encode('utf-8')
-						if d.has_key(array[1]):
-							d[array[1]] = d[array[1]] + 1
+						print vstock[i]._name, item['description'].encode('utf-8')
+						if d.has_key(i):
+							d[i] = d[i] + 1
 						else:
-							d[array[1]] = 1
+							d[i] = 1
 				elif str(item['created_at']) < st:
 					#print 1
 					browser.close()
@@ -85,10 +86,10 @@ def start(url, d):
 
 	    browser.close()
 	    browser.quit()
-    except:
-    	print 'error'
-		browser.close()
-		browser.quit()	
+    except Exception , e:
+    	print e
+        browser.close()
+        browser.quit()	
 
 def get_id():
 
@@ -128,14 +129,42 @@ def get_id():
 					people[p[0].get('value').encode('utf-8')] = 0
 					f.write(p[0].get('value').encode('utf-8') + ' ' + p[1].get('value').encode('utf-8') + '\n')
 
+class stock:
+	_id = ''
+	_name = ''
+	_industry = ''
+
+	def __init__(self, id, name, industry):
+		self._id = id
+		self._name = name
+		self._industry = industry
 
 def pawner():
 
 	f = open('id.txt', 'r')
-	yesterday = datetime.strftime(date.today() - timedelta(days = 1), "%Y-%m-%d")
+	today   = date.today()
+	yesterday = datetime.strftime(today - timedelta(days = 1), "%Y-%m-%d")
 	score_file = 'score' + yesterday + '.txt'
 	#ff = open('score' + yesterday + '.txt', 'r')
 	d = {}
+	vstock = []
+	ff = open('stock.txt', 'r')
+
+	while 1:
+		line = ff.readline()
+
+		if not line:
+			break
+		#print line
+
+		array = line[:-1].split('%')
+		#print array
+		s = stock(array[0], array[1], array[2])
+		vstock.append(s)
+
+
+	#print vstock[0]._industry
+	#return
 	#while 1:
 	#	score = ff.readline()
 	#	if not score:
@@ -158,7 +187,7 @@ def pawner():
 			while 1:
 
 				url = "http://xueqiu.com/" + user + "?page=" + str(page)
-				ret = start(url, d)
+				ret = start(url, d, today, vstock)
 				if ret == 0:
 					#print i
 					break
@@ -174,8 +203,8 @@ def pawner():
 	ff = open(score_file, 'w')
 	t = sorted(d.items(), lambda x, y: cmp(x[1], y[1]), reverse=True)
 	for key in t:
-		#print str(key[0]) + ' ' + str(key[1]) + '\n'
-		ff.write(str(key[0]) + ' ' + str(key[1]) + '\n')
+		print str(vstock[key[0]]._name) + '%' + str(vstock[key[0]]._industry) + '%'+ str(key[1]) + '\n'
+		ff.write(str(vstock[key[0]]._name) + '%' + str(vstock[key[0]]._industry) + '%'+ str(key[1]) + '\n')
 
     #id = 'backwasabi'
     #url = "http://xueqiu.com/" + id
@@ -192,5 +221,5 @@ if __name__ == "__main__":
 ##	timer = threading.Timer(7200, pawner)
 #	timer.start()
 
-	#get_id()
+	get_id()
 	pawner()

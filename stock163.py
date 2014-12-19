@@ -9,12 +9,15 @@
 import re,urllib2
 import xlwt
 from bs4 import BeautifulSoup
+
+
+
 count1 = 1
 class getstock:
     def __init__(self):
         pass
      
-    def go(self, count):
+    def go(self, count, summ):
         #定义网址，获取上交所创业板只需对应修改stock_num为6开头或3开头即可
         stock_num = str(count).zfill(7)
         if count > 600000:
@@ -31,7 +34,7 @@ class getstock:
             content = urllib2.urlopen(req).read()
         except Exception,e:
             print e
-            return
+            return 0
         soup = BeautifulSoup(content)
 
         c = soup.findAll('div',class_='relate_stock clearfix')
@@ -44,7 +47,13 @@ class getstock:
         print name
         if name != '':
             #print name
-            ws.write(str(str(count).zfill(6))+'%'+str(name)+ '%'+str(industry_name) +'\n')
+            #ws.write(str(str(count).zfill(6))+'%'+str(name)+ '%'+str(industry_name) +'\n')
+            ws.write(summ, 0, str(count).zfill(6))
+            ws.write(summ, 1, str(name))
+            ws.write(summ, 2, str(industry_name))
+            return 1
+     
+        return 0
 
         #获取负债率
      #   a = soup.find_all(class_='table_bg001 border_box fund_analys')
@@ -61,29 +70,40 @@ class getstock:
   
 #if __name__ == '__main__':
     #定义excel表格内容
-#wb = xlwt.Workbook()
-#ws = wb.add_sheet(u'资产负债表')
-#ws.write(0, 0, u'股票代码')
-#ws.write(0, 1, u'股票名称')
-ws = open('stock.txt', 'w')
+wb = xlwt.Workbook()
+ws = wb.add_sheet(u'stock')
+ws.write(1, 0, u'股票代码')
+ws.write(1, 1, u'股票名称')
+ws.write(1, 2, u'股票板块')
+ws.write(0, 3, u'统计时间')
+ws2 = wb.add_sheet(u'industry')
+ws2.write(1, 0, u'股票板块')
+ws2.write(0, 1, u'统计时间')
+
+
+#ws = open('stock.txt', 'w')
 #ws.write(0, 2, u'2013-12-31')
 #ws.write(0, 3, u'2012-12-31')
 #ws.write(0, 4, u'2011-12-31')
 #ws.write(0, 5, u'2010-12-31')
 #ws.write(0, 6, u'2009-12-31')
 #ws.write(0, 7, u'2008-12-31')
+
 gs = getstock()
 #目前深证最大号为002725，获取上交所创业板请修改相应最大号码
 
-
+summ = 2
 count = 1
 while count <=2735:
     try:
-        gs.go(count)
+        ret = gs.go(count, summ)
+        if ret == 1:
+            summ += 1
         print count
         #wb.save('stockdebt.xls')
         count1 += 1
         count += 1
+
     except Exception,e:
         print e
         count1 += 1
@@ -94,7 +114,10 @@ while count <=2735:
 count = 300000
 while count <=300409:
     try:
-        gs.go(count)
+        ret = gs.go(count, summ)
+        if ret:
+
+            summ += 1
         print count
         #wb.save('stockdebt.xls')
         count1 += 1
@@ -109,7 +132,10 @@ count = 600000
 while count <=603998:
     try:
 
-        gs.go(count)
+        ret = gs.go(count, summ)
+        if ret:
+
+            summ += 1
         print count
         #wb.save('stockdebt.xls')
         count1 += 1
@@ -119,5 +145,5 @@ while count <=603998:
         count1 += 1
         count += 1
         
-
+wb.save('stock.xls')
 

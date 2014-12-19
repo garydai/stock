@@ -21,7 +21,11 @@ from datetime import date
 import threading  
 import time 
 import json
- 
+import xlrd
+import xlwt
+
+from xlrd import open_workbook
+from xlutils.copy import copy
 
 def start(url, d, today, vstock):
    # try:
@@ -150,20 +154,32 @@ def pawner():
 	vstock = []
 	ff = open('stock.txt', 'r')
 
-	while 1:
-		line = ff.readline()
 
-		if not line:
-			break
+	wb = xlrd.open_workbook('stock.xls')
+	sh = wb.sheet_by_name('stock')
+
+	for rownum in range(sh.nrows):
+		if rownum < 2:
+			continue
+		s = stock(str(sh.cell(rownum, 0).value), str(sh.cell(rownum, 1).value.encode('utf-8')), str(sh.cell(rownum, 2).value.encode('utf-8')))
+		vstock.append(s)
+    	#print sh.row_values(rownum)
+
+	
+	#while 1:
+	#	line = ff.readline()
+
+	#	if not line:
+	#		break
 		#print line
 
-		array = line[:-1].split('%')
+	#	array = line[:-1].split('%')
 		#print array
-		s = stock(array[0], array[1], array[2])
-		vstock.append(s)
+	#	s = stock(array[0], array[1], array[2])
+	#	vstock.append(s)
 
 
-	#print vstock[0]._industry
+	print vstock[0]._industry
 	#return
 	#while 1:
 	#	score = ff.readline()
@@ -201,15 +217,20 @@ def pawner():
 		#	break
 	f.close()
 	ff = open(score_file, 'w')
+	rb = open_workbook('stock.xls')
+	rs = rb.sheet_by_name('stock')
+	wb = copy(rb)
+	ws = wb.get_sheet(0)
+	ws.write(1, 3, yesterday)
 	t = sorted(d.items(), lambda x, y: cmp(x[1], y[1]), reverse=True)
 	for key in t:
 		print str(vstock[key[0]]._name) + '%' + str(vstock[key[0]]._industry) + '%'+ str(key[1]) + '\n'
 		ff.write(str(vstock[key[0]]._name) + '%' + str(vstock[key[0]]._industry) + '%'+ str(key[1]) + '\n')
-
+		ws.write(key[0] + 2, 3, str(key[1]))
     #id = 'backwasabi'
     #url = "http://xueqiu.com/" + id
     #start(url)
-
+	wb.save('stock.xls')
 
 #	timer = threading.Timer(7200, pawner)
 #	timer.start()
@@ -221,5 +242,5 @@ if __name__ == "__main__":
 ##	timer = threading.Timer(7200, pawner)
 #	timer.start()
 
-	get_id()
+	#get_id()
 	pawner()

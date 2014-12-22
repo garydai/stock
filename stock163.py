@@ -43,14 +43,15 @@ class getstock:
         industry = c[1].find('li')
 
         industry_name = industry.contents[0].contents[0].encode('utf-8').strip()
-        print industry_name
-        print name
+        #print industry_name
+        #print name
         if name != '':
+            print summ
             #print name
             #ws.write(str(str(count).zfill(6))+'%'+str(name)+ '%'+str(industry_name) +'\n')
             ws.write(summ, 0, str(count).zfill(6))
-            ws.write(summ, 1, str(name))
-            ws.write(summ, 2, str(industry_name))
+            ws.write(summ, 1, soup.find('h1',class_='name').contents[1].contents[0])
+            ws.write(summ, 2, industry_name.decode('utf-8'))
             return 1
      
         return 0
@@ -99,6 +100,7 @@ while count <=2735:
         ret = gs.go(count, summ)
         if ret == 1:
             summ += 1
+            wb.save('stock.xls')
         print count
         #wb.save('stockdebt.xls')
         count1 += 1
@@ -115,9 +117,10 @@ count = 300000
 while count <=300409:
     try:
         ret = gs.go(count, summ)
-        if ret:
+        if ret == 1:
 
             summ += 1
+            wb.save('stock.xls')
         print count
         #wb.save('stockdebt.xls')
         count1 += 1
@@ -133,9 +136,10 @@ while count <=603998:
     try:
 
         ret = gs.go(count, summ)
-        if ret:
+        if ret == 1:
 
             summ += 1
+            wb.save('stock.xls')
         print count
         #wb.save('stockdebt.xls')
         count1 += 1

@@ -258,16 +258,7 @@ def pawner(day, t2):
 #	timer.start()
 
 
-import nltk.classify.util
-from nltk.classify import NaiveBayesClassifier
-from nltk.corpus import movie_reviews
- 
-def word_feats(words):
-    return dict([(word, True) for word in words])
- 
 
-def Naive_Bayes_Classifier():
-	pass
 
 
 if __name__ == "__main__":

@@ -7,6 +7,13 @@ stock
 
 2.在活跃用户的发帖中统计股票被提及的次数
 
+3.使用jieba分词
+
+[https://github.com/fxsjy/jieba.git](https://github.com/fxsjy/jieba.git)
+
+4.使用nltk NaiveBayesClassifier简单分类评论的正面和负面情绪 
+
+[http://streamhacker.com/2010/05/10/text-classification-sentiment-analysis-naive-bayes-classifier/](http://streamhacker.com/2010/05/10/text-classification-sentiment-analysis-naive-bayes-classifier/)
 
 todo：
 

@@ -152,101 +152,108 @@ class stock:
 
 import chardet
 
-def pawner(t):
+def pawner(day, t2):
 
-	f = open('id.txt', 'r')
+
 	today   = date.today()
-	yesterday1 = today - timedelta(days = t)
-	yesterday = datetime.strftime(today - timedelta(days = t), "%Y-%m-%d")
-	score_file = 'score' + yesterday + '.txt'
-	#ff = open('score' + yesterday + '.txt', 'r')
-	d = {}
-	print score_file
-	vstock = []
-	#ff = open('stock.txt', 'r')
+	delta = -1
 
-
-	wb = xlrd.open_workbook('stock.xls')
-	sh = wb.sheet_by_name('stock')
-
-	for rownum in range(sh.nrows):
-		if rownum < 2:
-			continue
-		s = stock(str(sh.cell(rownum, 0).value), sh.cell(rownum, 1).value.encode('utf-8'), sh.cell(rownum, 2).value.encode('utf-8'))
-		vstock.append(s)
-    	#print sh.row_values(rownum)
-
-	
-	#while 1:
-	#	line = ff.readline()
-
-	#	if not line:
-	#		break
-		#print line
-
-	#	array = line[:-1].split('%')
-		#print array
-	#	s = stock(array[0], array[1], array[2])
-	#	vstock.append(s)
-
-	print len(vstock)
-	print repr(vstock[0]._name)
-	#print chardet.detect(vstock[0]._name)
-	#print vstock[0]._name.decode('utf-8')
-	#return
-	#while 1:
-	#	score = ff.readline()
-	#	if not score:
-	#		break
-	#	array = score[:-1].split(' ')
-	#	d[array[0]] = int(array[1])
-	#ff.close()
-	#i = 1000000000
-	'''
 	while 1:
-		try:
-			line = f.readline()
-		#	user = str(i)
-			if not line:
-				break
-			array = line[:-1].split(' ')
-			user = array[0]
-			print array[0], array[1]
-			#user = "1676206424"
-			page = 1
-			while 1:
+		f = open('id.txt', 'r')
+		delta += 1
+		if delta >= t2:
+			break
+		yesterday1 = today - timedelta(days = day - delta)
+		yesterday = datetime.strftime(yesterday1, "%Y-%m-%d")
+		score_file = 'score' + yesterday + '.txt'
+		#ff = open('score' + yesterday + '.txt', 'r')
+		d = {}
+		print score_file
+		vstock = []
+		#ff = open('stock.txt', 'r')
 
-				url = "http://xueqiu.com/" + user + "?page=" + str(page)
-				ret = start(url, d, yesterday1, vstock)
-				if ret == 0:
-					#print i
+
+		wb = xlrd.open_workbook('stock.xls')
+		sh = wb.sheet_by_name('stock')
+
+		for rownum in range(sh.nrows):
+			if rownum < 2:
+				continue
+			s = stock(str(sh.cell(rownum, 0).value), sh.cell(rownum, 1).value.encode('utf-8'), sh.cell(rownum, 2).value.encode('utf-8'))
+			vstock.append(s)
+	    	#print sh.row_values(rownum)
+
+		
+		#while 1:
+		#	line = ff.readline()
+
+		#	if not line:
+		#		break
+			#print line
+
+		#	array = line[:-1].split('%')
+			#print array
+		#	s = stock(array[0], array[1], array[2])
+		#	vstock.append(s)
+
+		print len(vstock)
+		print repr(vstock[0]._name)
+		#print chardet.detect(vstock[0]._name)
+		#print vstock[0]._name.decode('utf-8')
+		#return
+		#while 1:
+		#	score = ff.readline()
+		#	if not score:
+		#		break
+		#	array = score[:-1].split(' ')
+		#	d[array[0]] = int(array[1])
+		#ff.close()
+		#i = 1000000000
+		
+		while 1:
+			try:
+				line = f.readline()
+			#	user = str(i)
+				if not line:
 					break
-				page = page + 1
-			time.sleep(5)
-		except:
-			continue
-		#break
-		#i = i  + 1
-		#if i >=9999999999:
-		#	break
-	'''
-	f.close()
-	ff = open(score_file, 'w')
-	rb = open_workbook('stock.xls')
-	rs = rb.sheet_by_name('stock')
-	wb = copy(rb)
-	ws = wb.get_sheet(0)
-	ncol = rs.ncols	
-	ws.write(1, ncol, yesterday)
-	t = sorted(d.items(), lambda x, y: cmp(x[1], y[1]), reverse=True)
-	for key in t:
-		print str(vstock[key[0]]._name) + '%' + str(vstock[key[0]]._industry) + '%'+ str(key[1]) + '\n'
-		ff.write(str(vstock[key[0]]._name) + '%' + str(vstock[key[0]]._industry) + '%'+ str(key[1]) + '\n')
-		ws.write(key[0] + 2, 3, key[1])
-    #id = 'backwasabi'
-    #url = "http://xueqiu.com/" + id
-    #start(url)
-	wb.save('stock.xls')
+				array = line[:-1].split(' ')
+				user = array[0]
+				print array[0], array[1]
+				#user = "1676206424"
+				page = 1
+				while 1:
+
+					url = "http://xueqiu.com/" + user + "?page=" + str(page)
+					ret = start(url, d, yesterday1, vstock)
+					if ret == 0:
+						#print i
+						break
+					page = page + 1
+				time.sleep(5)
+			except:
+				continue
+			#break
+			#i = i  + 1
+			#if i >=9999999999:
+			#	break
+		
+		f.close()
+		ff = open(score_file, 'w')
+		rb = open_workbook('stock.xls')
+		rs = rb.sheet_by_name('stock')
+		wb = copy(rb)
+		ws = wb.get_sheet(0)
+		ncol = rs.ncols	
+		ws.write(1, ncol, yesterday)
+		t = sorted(d.items(), lambda x, y: cmp(x[1], y[1]), reverse=True)
+		for key in t:
+			print str(vstock[key[0]]._name) + '%' + str(vstock[key[0]]._industry) + '%'+ str(key[1]) + '\n'
+			ff.write(str(vstock[key[0]]._name) + '%' + str(vstock[key[0]]._industry) + '%'+ str(key[1]) + '\n')
+			ws.write(key[0] + 2, ncol, key[1])
+	    #id = 'backwasabi'
+	    #url = "http://xueqiu.com/" + id
+	    #start(url)
+		wb.save('stock.xls')
 
 #	timer = threading.Timer(7200, pawner)
 #	timer.start()
@@ -258,5 +265,6 @@ if __name__ == "__main__":
 ##	timer = threading.Timer(7200, pawner)
 #	timer.start()
 	t = int(sys.argv[1])
+	t2 = int(sys.argv[2])
 	#get_id()
-	pawner(t)
+	pawner(t, t2)

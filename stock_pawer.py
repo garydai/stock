@@ -27,8 +27,12 @@ import xlwt
 from xlrd import open_workbook
 from xlutils.copy import copy
 
+import nltk
+
+description_id = 1
 def start(url, d, today, vstock):
    # try:
+    global description_id
     browser = webdriver.Chrome(executable_path='F:\chromedriver_win32\chromedriver.exe')
     url = url
     browser.get(url)
@@ -44,12 +48,7 @@ def start(url, d, today, vstock):
 	    result =  match.group(2)
 	    result = result + '}]'
 	    decode = json.loads(result)
-	    #print decode
-
-
-
-	    #today   = date.today()
-	    #print today
+	
 	    startDetect = time.time()
 	    st = int(time.mktime(datetime.strptime(datetime.strftime(today, "%Y-%m-%d"), "%Y-%m-%d").timetuple()))
 	    ed = int(time.mktime(datetime.strptime(datetime.strftime(today + timedelta(days = 1), "%Y-%m-%d"), "%Y-%m-%d").timetuple()))
@@ -59,13 +58,7 @@ def start(url, d, today, vstock):
 	    print ed
 
 	    for i in range(len(vstock)):
-	    #while 1:
-		#	line = f.readline()
 
-		#	if not line:
-		#		break
-			#print line
-		#	array = line[:-1].split('%')
 			for item in decode:
 				if item['mark'] == 1:
 					continue
@@ -74,6 +67,10 @@ def start(url, d, today, vstock):
 				if str(item['created_at']) > st and str(item['created_at']) < ed:
 					if item['description'].encode('utf-8').find(vstock[i]._name) != -1:
 						print 2
+						ff = open('corpus/' + str(description_id) + '.txt', 'w')
+						ff.write(item['description'].encode('utf-8'))
+						ff.close()
+						description_id += 1
 						#print vstock[i]._name, item['description'].encode('utf-8')
 						if d.has_key(i):
 							d[i] = d[i] + 1
@@ -102,6 +99,7 @@ def start(url, d, today, vstock):
         browser.quit()	
         return 0
 
+#获取热门用户列表
 def get_id():
 
 	url = 'http://xueqiu.com/people/all'
@@ -230,7 +228,8 @@ def pawner(day, t2):
 						break
 					page = page + 1
 				time.sleep(5)
-			except:
+			except Exception , e:
+				print e
 				continue
 			#break
 			#i = i  + 1
@@ -258,13 +257,28 @@ def pawner(day, t2):
 #	timer = threading.Timer(7200, pawner)
 #	timer.start()
 
+
+import nltk.classify.util
+from nltk.classify import NaiveBayesClassifier
+from nltk.corpus import movie_reviews
+ 
+def word_feats(words):
+    return dict([(word, True) for word in words])
+ 
+
+def Naive_Bayes_Classifier():
+	pass
+
+
 if __name__ == "__main__":
 
-
-
+	#nltk.download()
+	#negids = movie_reviews.fileids('neg')
+	#posids = movie_reviews.fileids('pos')
+	#print 1
 ##	timer = threading.Timer(7200, pawner)
 #	timer.start()
 	t = int(sys.argv[1])
 	t2 = int(sys.argv[2])
-	#get_id()
+	get_id()
 	pawner(t, t2)

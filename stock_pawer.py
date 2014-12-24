@@ -57,6 +57,7 @@ def start(url, d, today, vstock):
 	    ed = str(ed) + '000'
 	    print ed
 
+	    s_today = datetime.strftime(today, "%Y-%m-%d")
 	    for i in range(len(vstock)):
 
 			for item in decode:
@@ -65,10 +66,10 @@ def start(url, d, today, vstock):
 				#print item['created_at'], st, ed
 				#print item['description'].encode('utf-8'), vstock[i]._name
 				if str(item['created_at']) > st and str(item['created_at']) < ed:
-					if item['description'].encode('utf-8').find(vstock[i]._name) != -1:
+					if item['text'].encode('utf-8').find(vstock[i]._name) != -1:
 						print 2
-						ff = open('corpus/' + str(description_id) + '.txt', 'w')
-						ff.write(item['description'].encode('utf-8'))
+						ff = open('corpus/' + s_today + '_' + str(description_id) + '.txt', 'w')
+						ff.write(item['text'].encode('utf-8'))
 						ff.close()
 						description_id += 1
 						#print vstock[i]._name, item['description'].encode('utf-8')
@@ -164,6 +165,7 @@ def pawner(day, t2):
 		yesterday1 = today - timedelta(days = day - delta)
 		yesterday = datetime.strftime(yesterday1, "%Y-%m-%d")
 		score_file = 'score' + yesterday + '.txt'
+		industry_file = 'industry' + yesterday + '.txt'
 		#ff = open('score' + yesterday + '.txt', 'r')
 		d = {}
 		print score_file
@@ -238,17 +240,33 @@ def pawner(day, t2):
 		
 		f.close()
 		ff = open(score_file, 'w')
+
+		industry_p = open(industry_file, 'w')
 		rb = open_workbook('stock.xls')
 		rs = rb.sheet_by_name('stock')
 		wb = copy(rb)
 		ws = wb.get_sheet(0)
 		ncol = rs.ncols	
 		ws.write(1, ncol, yesterday)
+		industry_d = {}
 		t = sorted(d.items(), lambda x, y: cmp(x[1], y[1]), reverse=True)
 		for key in t:
 			print str(vstock[key[0]]._name) + '%' + str(vstock[key[0]]._industry) + '%'+ str(key[1]) + '\n'
 			ff.write(str(vstock[key[0]]._name) + '%' + str(vstock[key[0]]._industry) + '%'+ str(key[1]) + '\n')
+
+			if industry_d.has_key(vstock[key[0]]._industry):
+				industry_d[vstock[key[0]]._industry] += 1
+			else:
+				industry_d[vstock[key[0]]._industry] = 1
+
 			ws.write(key[0] + 2, ncol, key[1])
+
+		t = sorted(industry_d.items(), lambda x, y: cmp(x[1], y[1]), reverse=True)
+		for key in t:
+			print str(key[0]) + '%' + str(key[1]) + '\n'
+			industry_p.write(str(key[0]) + '%' + str(key[1]) + '\n')
+
+		print industry_d
 	    #id = 'backwasabi'
 	    #url = "http://xueqiu.com/" + id
 	    #start(url)
@@ -271,5 +289,5 @@ if __name__ == "__main__":
 #	timer.start()
 	t = int(sys.argv[1])
 	t2 = int(sys.argv[2])
-	get_id()
+	#get_id()
 	pawner(t, t2)

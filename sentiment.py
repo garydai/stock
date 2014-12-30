@@ -13,6 +13,24 @@ def word_feats(text):
 	words = cut(text)
 	return dict([(word, True) for word in words])
  
+def deal_corpus():
+
+	l = os.listdir('corpus')
+	#print l
+	posfeats = []
+	negfeats = []
+	for f in l:
+		print f
+		corpus = open('corpus/' + f, 'r')
+		text = corpus.read()
+		p = re.compile(r'[\x80-\xff]+') 
+		chlist =  p.findall(text)
+
+		t =  " ".join(chlist) 
+		corpus.close()
+		corpus = open('corpus/' + f, 'w')
+		corpus.write(t)
+		#return
 
 import chardet
 def cut(text):
@@ -29,6 +47,8 @@ def cut(text):
 if __name__ == "__main__":
 
 
+	deal_corpus()
+	exit()
 	l = os.listdir('pos')
 	print l
 	posfeats = []

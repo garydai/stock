@@ -29,14 +29,18 @@ from xlutils.copy import copy
 
 import nltk
 
+import threading
+import time
+
 description_id = 1
 def start(url, d, today, vstock):
    # try:
     global description_id
     browser = webdriver.Chrome(executable_path='F:\chromedriver_win32\chromedriver.exe')
     url = url
-    browser.get(url)
+
     try:
+	    browser.get(url)
 	    t = browser.page_source
 
 	    pn = re.compile(ur'(.*)"statuses":(.*?)}]', re.S)
@@ -229,7 +233,7 @@ def pawner(day, t2):
 						#print i
 						break
 					page = page + 1
-				time.sleep(5)
+				time.sleep(2)
 			except Exception , e:
 				print e
 				continue
@@ -289,5 +293,5 @@ if __name__ == "__main__":
 #	timer.start()
 	t = int(sys.argv[1])
 	t2 = int(sys.argv[2])
-	#get_id()
+	get_id()
 	pawner(t, t2)

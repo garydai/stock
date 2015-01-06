@@ -33,10 +33,11 @@ import threading
 import time
 
 description_id = 1
+browser = webdriver.Chrome(executable_path='F:\chromedriver_win32\chromedriver.exe')
 def start(url, d, today, vstock):
    # try:
     global description_id
-    browser = webdriver.Chrome(executable_path='F:\chromedriver_win32\chromedriver.exe')
+    global browser
     url = url
 
     try:
@@ -46,8 +47,8 @@ def start(url, d, today, vstock):
 	    pn = re.compile(ur'(.*)"statuses":(.*?)}]', re.S)
 	    match = pn.match(t)
 	    if not match:
-	        browser.close()
-	        browser.quit()
+	       # browser.close()
+	       # browser.quit()
 	    	return 0
 	    result =  match.group(2)
 	    result = result + '}]'
@@ -83,8 +84,8 @@ def start(url, d, today, vstock):
 							d[i] = 1
 				elif str(item['created_at']) < st and i == len(vstock) -1:
 					#print 1
-					browser.close()
-					browser.quit()
+				#	browser.close()
+				#	browser.quit()
 					#if i == len(vstock) -1: 
 					return 0
 
@@ -94,14 +95,14 @@ def start(url, d, today, vstock):
 
 	   # print decode[0]['description'].encode('utf-8')
 	   	
-	    browser.close()
-	    browser.quit()
+	   # browser.close()
+	   # browser.quit()
 	    return 1
     except Exception , e:
     	print e
 
-        browser.close()
-        browser.quit()	
+       # browser.close()
+       # browser.quit()	
         return 0
 
 #获取热门用户列表
@@ -160,6 +161,7 @@ def pawner(day, t2):
 
 	today   = date.today()
 	delta = -1
+
 
 	while 1:
 		f = open('id.txt', 'r')
@@ -242,6 +244,8 @@ def pawner(day, t2):
 			#if i >=9999999999:
 			#	break
 		
+		browser.close()
+		browser.quit()	
 		f.close()
 		ff = open(score_file, 'w')
 

@@ -22,6 +22,7 @@ for fname in file_names:
 	stock_t = {}
 	while 1:
 		line = f.readline()
+		#print line
 		if not line:
 			break
 		array = line[:-1].split('%')
@@ -33,15 +34,16 @@ for fname in file_names:
 		#else:
 		stock_t[a] = int(array[2])
 	
+		#print line
 		summ += int(array[2])
 	for key in stock_t:
 		if stock.has_key(key):
-			stock[key].append(stock_t[key]/float(1))
+			stock[key].append(stock_t[key]/float(summ))
 		else:
-			stock[key] = [stock_t[key]/float(1)]		
+			stock[key] = [stock_t[key]/float(summ)]		
+	#print stock[u'中信证券']
 
-
-url = 'http://quotes.money.163.com/trade/lsjysj_'+ '600030'+'.html'
+url = 'http://quotes.money.163.com/trade/lsjysj_'+ '600030'+'.html?year=2014&season=4'
 print url
 #print("股票代码:" + stock_num)
 headers = {"User-Agent":"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6"}
@@ -83,13 +85,24 @@ key = u'中信证券'
 x = range(len(stock[key]))
 print stock[key]
 y = stock[key]
+
+yy1 = []
+yy2 = []
+for i in range(len(stock[key])):
+	if y[i] != 0 or y2[i] !=0:
+		yy1.append(y[i])
+		yy2.append(y2[i])
+
+print yy2
+x = range(len(yy1))
 #t =float(sum(y))
 #y = [ a / t for a in y]
 #print t
 print x, y
 plt.xlabel(xlabel)
-f.plot(x, y)
-f2.plot(x, y2)
+print xlabel
+f.plot(x, yy1)
+f2.plot(x, yy2)
 
 #
 plt.show()

@@ -378,7 +378,7 @@ def get_pattern(stock_name):
 	stock = {}
 	date = {}
 
-	for i in range(len(file_names) - 2 - length , len(file_names) - 2):
+	for i in range(len(file_names) - length , len(file_names) ):
 
 		fname = file_names[i]
 
@@ -448,6 +448,7 @@ def get_pattern(stock_name):
 				pattern += '0'
 
 		print pattern	
+
 
 
 if __name__ == "__main__":

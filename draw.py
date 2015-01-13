@@ -43,6 +43,7 @@ for fname in file_names:
 			stock[key] = [stock_t[key]/float(summ)]		
 	#print stock[u'中信证券']
 
+#url = 'http://quotes.money.163.com/trade/lsjysj_'+ '601800'+'.html?year=2014&season=4'
 url = 'http://quotes.money.163.com/trade/lsjysj_'+ '600030'+'.html?year=2014&season=4'
 print url
 #print("股票代码:" + stock_num)
@@ -76,12 +77,13 @@ for fname in file_names:
 		y2.append(0)
 print y2
 fig = plt.figure()
-f = fig.add_subplot(211)
-f2 = fig.add_subplot(212)
+f = fig.add_subplot(111)
+f2 = fig.add_subplot(111)
 #ax = plt.gca()
 #ax.xaxis.set_major_locator( MultipleLocator(1) )
 #for key in stock:
 key = u'中信证券'
+#key = u'中国交建'
 x = range(len(stock[key]))
 print stock[key]
 y = stock[key]
@@ -89,11 +91,22 @@ y = stock[key]
 yy1 = []
 yy2 = []
 for i in range(len(stock[key])):
-	if y[i] != 0 or y2[i] !=0:
+	if y[i] != 0 and y2[i] !=0:
 		yy1.append(y[i])
 		yy2.append(y2[i])
 
 print yy2
+
+#normal
+minn = min(yy1)
+maxx = max(yy1)
+yy1 = [ (t - minn) / (maxx - minn) for t in yy1 ]
+
+minn = min(yy2)
+maxx = max(yy2)
+yy2 = [ (t - minn) / (maxx - minn) for t in yy2 ]
+
+
 x = range(len(yy1))
 #t =float(sum(y))
 #y = [ a / t for a in y]
@@ -102,8 +115,9 @@ print x, y
 plt.xlabel(xlabel)
 print xlabel
 f.plot(x, yy1)
-f2.plot(x, yy2)
 
+f2.plot(x, yy2)
+plt.savefig("1.png")  
 #
 plt.show()
 #break

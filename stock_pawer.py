@@ -143,7 +143,7 @@ def get_id():
 				if not people.has_key(p[0].get('value').encode('utf-8')):
 					people[p[0].get('value').encode('utf-8')] = 0
 					f.write(p[0].get('value').encode('utf-8') + ' ' + p[1].get('value').encode('utf-8') + '\n')
-
+	print 1
 class stock:
 	_id = ''
 	_name = ''

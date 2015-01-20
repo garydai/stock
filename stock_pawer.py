@@ -244,8 +244,7 @@ def pawner(day, t2):
 			#if i >=9999999999:
 			#	break
 		
-		browser.close()
-		browser.quit()	
+
 		f.close()
 		ff = open(score_file, 'w')
 
@@ -280,6 +279,8 @@ def pawner(day, t2):
 	    #start(url)
 		wb.save('stock.xls')
 
+	browser.close()
+	browser.quit()	
 #	timer = threading.Timer(7200, pawner)
 #	timer.start()
 

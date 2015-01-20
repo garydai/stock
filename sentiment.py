@@ -14,6 +14,12 @@ from glob import glob
 
 import re,urllib2
 from bs4 import BeautifulSoup
+import datetime
+from datetime import datetime
+from datetime import timedelta
+from datetime import date
+
+import matplotlib.pyplot as plt
 
 def word_feats(text, feature):
 
@@ -164,8 +170,34 @@ def method1():
 	#classifier.show_most_informative_features(5)
 
 
-def get_price(code, date):
+def get_price(code, cur_date, length):
 
+
+	date = {}
+	today =  datetime.strptime(cur_date, "%Y-%m-%d")
+	#print today
+	#return
+	i = 0
+	while len(date) < length:
+	
+		y = today - timedelta(days = i)
+		t = datetime.strftime(y, "%Y-%m-%d")
+		print t
+		d = t.split('-')
+
+		#统计日是周末
+		weekday = datetime(int(d[0]), int(d[1]), int(d[2])).strftime("%w")
+		if weekday == '0' or weekday == '6':
+			i += 1
+			continue
+	#	print 11		
+		i += 1
+
+
+		date[t] = -1
+
+	#print date
+	#return
 	url = 'http://quotes.money.163.com/trade/lsjysj_'+ str(code)+'.html'
 	print url
 	#print("股票代码:" + stock_num)
@@ -219,6 +251,7 @@ def get_price(code, date):
 		if web.has_key(key):
 			price.append(float(web[key]))
 			#date[key] = float(td[4].contents[0])
+	print price
 	return price
 	#print date
 
@@ -252,15 +285,33 @@ def method2():
 		#s = stock(str(sh.cell(rownum, 0).value), sh.cell(rownum, 1).value.encode('utf-8'), sh.cell(rownum, 2).value.encode('utf-8'))
 		#vstock.append(s)
 
-	length = 4
+	length = 5
 	pro = {}
 	for j in range(len(file_names) - length + 1):
+		if file_names[j].find('2014-11') != -1:
+			continue
+
 		stock = {}
 		i = j
 		date = {}
-		while i < j + length:
-			fname = file_names[i]
+		end = file_names[j + length -1]
+		end_date =  end[5:-4]
+		d = end[5:-4].split('-')
 
+		#统计日是周末
+		weekday = datetime(int(d[0]), int(d[1]), int(d[2])).strftime("%w")
+		if weekday == '0' or weekday == '6':
+			i += 1
+			continue
+
+		while len(date) < length and i < len(file_names):
+			fname = file_names[i]
+			#remove weekday
+			#d = fname[5:-4].split('-')
+			#weekday = datetime.datetime(int(d[0]), int(d[1]), int(d[2])).strftime("%w")
+			#if weekday == '0' or weekday == '6':
+			#	i += 1
+			#	continue
 			date[fname[5:-4]] = -1
 
 			f = open(fname, 'r')
@@ -274,8 +325,8 @@ def method2():
 					break
 				array = line[:-1].split('%')
 				a = array[0].decode('utf-8')
-
-
+				#print line
+				#print a.encode('utf-8'), array[2]
 				stock_t[a] = int(array[2])
 	
 				#print line
@@ -299,7 +350,7 @@ def method2():
 			#print code[key].encode('utf-8')
 			##print stock[key]
 			#web = {}
-			price = get_price(code[key], date)
+			price = get_price(code[key], end_date, length)
 			if len(price) != length:
 				continue
 
@@ -336,6 +387,7 @@ def method2():
 				pro[pattern].append(p)
 			else:
 				pro[pattern] = [p]
+
 	print pro
 	for key in pro:
 		up = 0
@@ -353,7 +405,112 @@ def method2():
 		print key, up*1.0 /(summ), down* 1.0/summ, draw*1.0/summ
 
 
+def method3():
 
+	file_names = glob('score*')
+#file_names = glob('industry*')
+	file_names.sort()
+	
+	wb = xlrd.open_workbook('stock.xls')
+	sh = wb.sheet_by_name('stock')
+	code = {}
+	for rownum in range(sh.nrows):
+		if rownum < 2:
+			continue
+		code[sh.cell(rownum, 1).value] = sh.cell(rownum, 0).value
+
+	price = {}	
+	stock = {}
+	days = 2
+	for i in range(days):
+		file_name = file_names[len(file_names) - i - 1]
+		f = open(file_name, 'r')
+
+
+		stock_t = {}
+		summ = 0
+		while 1:
+
+			line = f.readline()
+			#print line
+			if not line:
+				break
+			array = line[:-1].split('%')
+			a = array[0].decode('utf-8')
+			date = file_names[len(file_names) - 1][5:-4]
+
+			today =  datetime.strptime(date, "%Y-%m-%d")
+
+			summ += int(array[2])
+			#stock.append(int(array[2]))
+			if i == 0:
+
+				y = today + timedelta(days = 1)
+				t = datetime.strftime(y, "%Y-%m-%d")
+				#price.append(get_price(code[a], t, 2))
+				price[a] = get_price(code[a], t, 2)
+
+			stock_t[a] = int(array[2])
+
+
+			#print line
+			summ += int(array[2])
+
+		for key in stock_t:
+			if stock.has_key(key):
+				stock[key].append(stock_t[key]/float(summ))
+			else:
+				stock[key] = [stock_t[key]/float(summ)]	
+
+
+
+
+	#x = [ t*1.0/summ for t in stock]
+	y = []
+	x1 = []
+	y1 = []
+	x2 = []
+	y2 = []
+	x3 = []
+	y3 = []
+	print stock
+	print price
+	for t in price:
+		if len(price[t]) == 2 and len(stock[t]) == days:
+			if price[t][1] > price[t][0]:
+				#y.append(0)
+				x1.append(stock[t][0])
+				y1.append(stock[t][1])
+
+			elif price[t][1] < price[t][0]:
+				x2.append(stock[t][0])
+				y2.append(stock[t][1])
+
+				#y.append(1)
+			else:
+				x3.append(stock[t][0])
+				y3.append(stock[t][1])
+				#y.append(2)
+		else:
+			y.append(-1)
+
+	fig = plt.figure()
+	f = fig.add_subplot(111)
+
+	#for i in range(x):
+	 
+	#	f.plot([x[i], x[i]],[0, y[i]])
+
+
+
+	print x1, y1
+	f.plot(x1, y1, '*', color = 'red')
+	f.plot(x2, y2, '*', color = 'green')
+	f.plot(x3, y3, '*', color = 'blue')
+
+	plt.show()
+
+	#f.close()
 
 
 def get_pattern(stock_name):
@@ -369,18 +526,29 @@ def get_pattern(stock_name):
 		code[sh.cell(rownum, 1).value] = sh.cell(rownum, 0).value
 
 
-	file_names = glob('score*')
+	file_names_t = glob('score*')
 #file_names = glob('industry*')
-	file_names.sort()
+	file_names_t.sort()
 
-	length = 3
+	length = 4
 	pro = {}
 	stock = {}
 	date = {}
+	file_names = []
+	for fname in file_names_t:
+		#d = fname[5:-4].split('-')
+		#weekday = datetime.datetime( int(d[0]), int(d[1]), int(d[2])).strftime("%w")
+		
+		#if weekday == '0' or weekday == '6' :
+
+		#	continue
+		file_names.append(fname)
 
 	for i in range(len(file_names) - length , len(file_names) ):
 
 		fname = file_names[i]
+
+
 
 		date[fname[5:-4]] = -1
 
@@ -416,16 +584,16 @@ def get_pattern(stock_name):
 		#if len(stock[key]) != len(file_names):
 		if len(stock[key]) != length:
 			print 'data not enougth'
-			return
+			return ''
 		
 		#print code[key].encode('utf-8')
 		##print stock[key]
 		#web = {}
-		price = get_price(code[key], date)
+		price = get_price(code[key], file_names[len(file_names) -1 ][5:-4], length)
 		print price
 		if len(price) != length:
 			print 'price data not enougth'
-			return
+			return ''
 
 		print price
 		pattern = ''
@@ -448,13 +616,61 @@ def get_pattern(stock_name):
 				pattern += '0'
 
 		print pattern	
+		return pattern
 
 
+def predict():
+
+	f = open('pattern.txt', 'r')
+	pattern = {}
+	length = 3
+	while 1:
+		line = f.readline()
+		if not line:
+			break
+		array = line[:-1].split(' ')
+		pattern[array[0]] = int(array[1])
+
+
+	wb = xlrd.open_workbook('stock.xls')
+	sh = wb.sheet_by_name('stock')
+	code = {}
+	print pattern
+	wrong = 0
+	right = 0
+	for rownum in range(sh.nrows):
+		if rownum < 2:
+			continue
+		print sh.cell(rownum, 1).value.encode('utf-8')
+		p = get_pattern(sh.cell(rownum, 1).value)
+		if pattern.has_key(p):
+			ddd = {}
+			ddd['2015-01-13'] = -1
+			ddd['2015-01-14'] = -1
+			price = get_price(sh.cell(rownum, 0).value, '2015-01-13', length)
+			print price
+			t = -1
+			if price[1] > price[0]:
+				t = 0
+			elif price[1] < price[0]:
+				t = 1
+			else:
+				t = 2
+			if pattern[p] != t:
+				wrong += 1
+			else:
+				right += 1
+			print '--------------------------', sh.cell(rownum, 1).value.encode('utf-8'), pattern[p], t
+
+	print wrong, right, right*1.0/(wrong+right)
+		#code[sh.cell(rownum, 1).value] = sh.cell(rownum, 0).value
 
 if __name__ == "__main__":
 
 	#method2()
-	get_pattern(u'中信证券')
+	#get_pattern(u'中信证券')
+	#predict()
+	method3()
 
  
 	

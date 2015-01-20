@@ -66,7 +66,34 @@ for i in range(1, len(tr)):
 	td = tr[i].findAll('td')
 
 	web[td[0].contents[0]] = (td[4].contents[0])
+
+
+url = 'http://quotes.money.163.com/trade/lsjysj_'+ '600030'+'.html'
+print url
+#print("股票代码:" + stock_num)
+headers = {"User-Agent":"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6"}
+req = urllib2.Request( url, headers = headers)
+try:
+    content = urllib2.urlopen(req).read()
+except Exception,e:
+    print e
+    #return 0
+soup = BeautifulSoup(content)
+xlabel = xlabel[5:-4]
+xlabel = xlabel[8:-4]
+table = soup.find('table',class_='table_bg001 border_box limit_sale')
+tr = table.findAll('tr')
+
+for i in range(1, len(tr)):
+	td = tr[i].findAll('td')
+
+	web[td[0].contents[0]] = (td[4].contents[0])
+
+
+
+
 print web
+
 y2=[]
 for fname in file_names:
 	nm = fname[5:-4]
@@ -114,7 +141,7 @@ x = range(len(yy1))
 print x, y
 plt.xlabel(xlabel)
 print xlabel
-f.plot(x, yy1)
+f.plot(x, yy1, color = 'red')
 
 f2.plot(x, yy2)
 plt.savefig("1.png")  

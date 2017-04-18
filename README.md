@@ -1,7 +1,7 @@
 stock
 =====
 
-###思路
+### 思路
 
 1 统计雪球讨论热门的股票
 
@@ -67,7 +67,7 @@ todo：
 
 分析哪几个大V的观点与大盘的走势相符（合力对市场的影响）
 
-###运行说明
+### 运行说明
 
 python stockCode.py 
 
@@ -77,7 +77,7 @@ python xueqiuPawer.py 3 2
 
 抓取雪球从3天前开始2天内的数据
 
-###需要安装的python模块
+### 需要安装的python模块
 beautifulsoup
 
 xlwt
@@ -90,10 +90,10 @@ xlutils
 
 nltk
 
-####其他
+#### 其他
 chromedriver
 
-###特殊说明
+### 特殊说明
 
 linux环境必须桌面版才能运行，因为需要打开浏览器
 
